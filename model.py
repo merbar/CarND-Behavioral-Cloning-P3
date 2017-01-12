@@ -96,29 +96,12 @@ def generateBatch(trainData):
         totalCount = 1
         batchIndex = 0
         for data in trainData:
-            img = Image.open(data['img'])
-
-            '''
-            if DEBUG:
-                if totalCount == 1:
-                    #imgDebug = np.array(img)
-                    imgDebug = preprocessImg(img, flip=data['flip'])
-            '''
-                    
+            img = Image.open(data['img'])                   
             batchImg[batchIndex] = preprocessImg(img, flip=data['flip'])
             batchSteer[batchIndex] = data['steer']
-
-            '''
-            if DEBUG:
-                if totalCount == 1:
-                    print(batchImg[batchIndex])
-                    #print('\n\n%s\n\n' % batchImg.shape)
-            '''
-
             if (batchIndex == BATCHSIZE-1) or (totalCount == len(trainData)):
                 if DEBUG:
                     print('\nyielding batch up to %s with batch size %s' % (totalCount, batchIndex+1))
-                
                 # cut down batch array if it is smaller than BATCHSIZE (otherwise we pass zero-values to the trainer)
                 if batchIndex < BATCHSIZE-1:
                     batchImg = batchImg[:batchIndex+1]
@@ -262,13 +245,12 @@ def main():
     model.fit_generator(generator, samples_per_epoch=20000, nb_epoch=EPOCHS)
 
     print("saving model...")
-    fileName = '%stest' % MODEL_PATH
+    modelName = 'nVidia_%s' % EPOCHS
+    fileName = '%s%s' % (MODEL_PATH, modelName)
     json_string = model.to_json()
     with open('%s.json' % fileName, "w") as json_file:
         json_file.write(json_string)
     model.save_weights('%s.h5' % fileName)
-    
-    
 
 if __name__ == '__main__':
     main()
