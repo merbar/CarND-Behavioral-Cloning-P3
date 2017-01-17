@@ -14,6 +14,18 @@ Data Preprocessing:
 ---
 I added a few steps to augment the recorded data (in order):
 
+- **Cropping**
+
+***Implementation:*** I cropped a little more than the top fifth of the image as well as the bottom to remove the car’s hood from the image. This yielded a generally smoother ride around track 1. I originally cropped one third off the top, but that led to worse performance on Track 2 due to the slopes.
+
+***Result:*** More reliable drive
+
+- **Scaling**
+
+***Implementation:*** Images were scaled to 64x64 pixels. This seemed safe to do since the game creates clean, synthetic images with little complexity to begin with.
+
+***Result:*** Much faster training times
+
 - **Steering angles close to zero (straight steering) are ignored** according to a given probability
 
 ***Reason:*** Recording of a car going around Track 1 will be skewed towards going straight since much of the track doesn’t require steering input.
@@ -37,18 +49,6 @@ I added a few steps to augment the recorded data (in order):
 ***Implementation***: Tried offsets between 0.05 and 0.5. Greater values improved the driving performance of the car. Values below 0.2 didn’t have as much of an impact, while getting closer to 0.5 caused the car’s driving to become very jittery with lots of over-correcting. I settled on 0.25, which was a surprisingly high value.
 
 ***Result:*** More more reliable drive
-
-- **Cropping**
-
-***Implementation:*** I cropped a little more than the top fifth of the image as well as the bottom to remove the car’s hood from the image. This yielded a generally smoother ride around track 1. I originally cropped one third off the top, but that led to worse performance on Track 2 due to the slopes.
-
-***Result:*** More reliable drive
-
-- **Scaling**
-
-***Implementation:*** Images were scaled to 64x64 pixels. This seemed safe to do since the game creates clean, synthetic images with little complexity to begin with.
-
-***Result:*** Much faster training times
 
 - **Randomize brightness and add artificial shadows**
 
