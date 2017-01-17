@@ -41,9 +41,17 @@ Additionally, artificial “shadows” are added simply as a rectangle of darkne
 Sample images
 ---
 The following represent sample images used in the model. For better visualization, the steering angle is overlayed and they are 256x256 instead of 64x64.
+
+
 ![alt tag](sampleImages/flipped.jpg "Flipped Image") Flipped Image
+
+
 ![alt tag](sampleImages/brightness.jpg "Reduced Brightness") Reduced Brightness
+
+
 ![alt tag](sampleImages/shadow.jpg "Added random shadow") Added random shadow
+
+
 ![alt tag](sampleImages/stereoImg_shdw.jpg "Left camera image with added shadow") Left camera image with added shadow
 
 Data normalization
