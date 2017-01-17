@@ -75,6 +75,8 @@ https://github.com/commaai/research/blob/master/train_steering_model.py
 For both, I reduced kernel sizes to be 3x3 at most due to my much smaller input images.
 From the beginning, I got more reliable results from commaAi. The nVidia model would sometimes turn “stale” at higher epoch counts, returning only one steering value for any given input.
 
+I am using the Adam optimizer.
+
 I tested two approaches for my **training data generator**.
 
 1) Per epoch, pass exactly one sample of each element in the training set to the model then reset and move on to next epoch
