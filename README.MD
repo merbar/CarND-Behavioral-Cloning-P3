@@ -90,6 +90,7 @@ Model Architecture and Training Strategy
 I tried out two existing architectures to tackle this project:
 Implemented **nVidia** model based on:
 http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf
+
 Used **commaAI** model from:
 https://github.com/commaai/research/blob/master/train_steering_model.py
 
