@@ -3,7 +3,7 @@ Udacity Self-Driving Car Engineer: Project 3 - Behavioral Cloning
 
 Approach
 ---
-In order to establish some ground-truth, I started out with only the Udacity data, wanting to get the car drive around the track at least once with the published baseline data. Once I achieved that, I added my own data and gradually introduced more preprocessing steps as outlined below in order to improve two things:
+In order to establish ground truth, I started out with only the Udacity data, wanting to get the car drive around the track at least once with the published baseline data. Once I achieved that, I added my own data and gradually introduced more preprocessing steps as outlined below in order to improve two things:
 
 - Smoothness of the drive
 - Prevent overfitting, defined by good performance on Track 2
@@ -17,28 +17,34 @@ I added a few steps to augment the recorded data (in order):
 - **Steering angles close to zero (straight steering) are ignored** according to a given probability
 ***Reason:*** Recording of a car going around Track 1 will be skewed towards going straight since much of the track doesn’t require steering input.
 ***Implementation:*** Steering angles close to zero are ignored according to a given probability. I arrived at a factor of 0.5 at the end.
-***Result:*** Less erratic driving
+***Result:*** Better lane keeping through curves
 - **Flipped data**
 ***Reason:*** Recording of a car going around Track 1 will be skewed towards making left turns.
-Implementation: All images in the dataset are flipped and the corresponding steering angle is inverted
-***Result:*** Less erratic driving
+***Implementation***: All images in the dataset are flipped and the corresponding steering angle is inverted
+***Result:*** More reliable drive (less swerving, less "close calls")
 - **Use of stereo images**
 ***Reason:*** Just an experiment, but it greatly improved the performance of my model
-Implementation: Tried offsets between 0.05 and 0.5. Greater values improved the driving performance of the car. Values below 0.2 didn’t have as much of an impact, while getting closer to 0.5 caused the car’s driving to become very jittery with lots of over-correcting. I settled on 0.25, which was a surprisingly high value.
-***Result:*** Much less erratic driving
+***Implementation***: Tried offsets between 0.05 and 0.5. Greater values improved the driving performance of the car. Values below 0.2 didn’t have as much of an impact, while getting closer to 0.5 caused the car’s driving to become very jittery with lots of over-correcting. I settled on 0.25, which was a surprisingly high value.
+***Result:*** More more reliable drive
 - **Cropping**
 I cropped a little more than the top fifth of the image as well as the bottom to remove the car’s hood from the image. This yielded a generally smoother ride around track 1. I originally cropped one third off the top, but that led to worse performance on Track 2 due to the slopes.
-***Result:*** Better generalization
+***Result:*** More reliable drive
 - **Scaling**
 Images were scaled to 64x64 pixels. This seemed safe to do since the game creates clean, synthetic images with little complexity to begin with.
 ***Result:*** Much faster training times
 - **Randomize brightness and add artificial shadows**
 ***Reason:*** My model would tend to swerve around shaded areas, clearly identifying them as hard road boundaries. It would also start behaving unpredictably when entering and exiting entirely dark areas of Track 2.
-Implementation: Brightness of the entire image is scaled randomly between 0.25 and 1.25.
+***Implementation:*** Brightness of the entire image is scaled randomly between 0.25 and 1.25.
 Additionally, artificial “shadows” are added simply as a rectangle of darkness that is blended into the original image. Shadows in the game world are fairly simple geometrically, and sticking to an even simpler rectangle shape helped the model enough to be less sensitive to shadows.
 ***Result:*** Car drives more predictably through shady areas. After this augmentation, my model started being able to navigate Track 2 in it’s entirety.
 
-(sample images)
+Sample images
+---
+The following represent sample images used in the model. For better visualization, the steering angle is overlayed and they are 256x256 instead of 64x64.
+![alt tag](sampleImages/flipped.jpg "Flipped Image") Flipped Image
+![alt tag](sampleImages/brightness.jpg "Reduced Brightness") Reduced Brightness
+![alt tag](sampleImages/shadow.jpg "Added random shadow") Added random shadow
+![alt tag](sampleImages/stereoImg_shdw.jpg "Left camera image with added shadow") Left camera image with added shadow
 
 Data normalization
 ---
@@ -59,7 +65,7 @@ Used **commaAI** model from:
 https://github.com/commaai/research/blob/master/train_steering_model.py
 
 For both, I reduced kernel sizes to be 3x3 at most due to my much smaller input images.
-From the beginning, I got more reliable results from commaAi. The nVidia model would sometimes turn “stale” at higher Epoch counts. Returning only one steering value for any given input.
+From the beginning, I got more reliable results from commaAi. The nVidia model would sometimes turn “stale” at higher epoch counts, returning only one steering value for any given input.
 
 I tested two approaches for my **training data generator**.
 
@@ -68,15 +74,16 @@ I tested two approaches for my **training data generator**.
 
 I got better, more reliable training results from approach 2. It made even more sense to stick to the random generator after adding preprocessing steps that are based on randomness (brightness and shadows) - the images are now somewhat unique regardless of whether the generator sends on duplicates or not.
 
-I am training on 20.000 samples per epoch with a batch size of 64.
+Since validation data did not seem like a reasonable measure of the  performance of the model, I simply ran many wedges of different settings and tested on the track itself.
+
+In the end, my most succesfuly model trained for 10 epochs on 20.000 samples per epoch with a batch size of 64.
 
 Drive.py changes
 ---
-I am calling my model’s preprocessing function. In it’s default configuration, it only resizes the images to the model’s resolution.
-I also increased the default speed to 0.3 in order to make it through Track 2.
+- I am calling my model’s preprocessing function. In it’s default configuration, it only resizes the images to the model’s resolution.
+- The steering angle output is smoothed over one sample in time, making the car swerve less on straights.
+- The throttle is mapped to a combination of speed and steering angle. The car will slow down during tight  turns (this basically increases the samples per-distance of track). While my model passed track 2 without this change, I still wanted to add it for more robustness. There is a minimum speed of 10 mp/h that the car is not allowed to go below.
 
 Future Improvement
 ---
 - Higher sampling rate for autonomous mode. This would probably smooth out the drive at top speed quite a bit.
-- Smooth out steering angle in drive.py over one or two frames to reduce remaining input peaks.
-- Large steering inputs should cause a reduction in throttle to prevent overly aggressive turns.
