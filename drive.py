@@ -25,9 +25,21 @@ sio = socketio.Server()
 app = Flask(__name__)
 model = None
 prev_image_array = None
+prev_steer_length = 1
+prev_steer_array = [0]*prev_steer_length
+prev_steer_i = 0
+prev_throttle = 0.
+
+
 
 @sio.on('telemetry')
 def telemetry(sid, data):
+    #CHANGE
+    global prev_steer_i
+    global prev_steer_array
+    global prev_throttle
+    throttleIncStep = 0.1
+
     # The current steering angle of the car
     steering_angle = data["steering_angle"]
     # The current throttle of the car
@@ -43,9 +55,30 @@ def telemetry(sid, data):
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
-    throttle = 0.2
+    #throttle = 0.3
+
+    ## CHANGE
+    # smoot out steering angle over time
+    steering_angle_smooth = (steering_angle + np.sum(prev_steer_array)) / (1+prev_steer_length)
+    prev_steer_array[prev_steer_i] = steering_angle_smooth
+    prev_steer_i += 1
+    if prev_steer_i >= prev_steer_length:
+        prev_steer_i = 0
+
+    # relate steering angle to a max speed
+    targetSpeed = max((((abs(steering_angle_smooth*25))/-30.)+1.) * 30, 15.)
+    if float(speed) > targetSpeed:
+        throttle = max(prev_throttle - throttleIncStep, -0.4)
+    else:
+        throttle = min(prev_throttle + throttleIncStep, 0.4)
+    # failsave so car doesn't stall out:
+    if float(speed) < 10.:
+        throttle = 0.8
+    prev_throttle = throttle
+    ## END CHANGE
+
     print(steering_angle, throttle)
-    send_control(steering_angle, throttle)
+    send_control(steering_angle_smooth, throttle)
 
 
 @sio.on('connect')
