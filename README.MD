@@ -40,13 +40,13 @@ I added a few steps to augment the recorded data (in order):
 
 - **Cropping**
 
-I cropped a little more than the top fifth of the image as well as the bottom to remove the car’s hood from the image. This yielded a generally smoother ride around track 1. I originally cropped one third off the top, but that led to worse performance on Track 2 due to the slopes.
+***Implementation:*** I cropped a little more than the top fifth of the image as well as the bottom to remove the car’s hood from the image. This yielded a generally smoother ride around track 1. I originally cropped one third off the top, but that led to worse performance on Track 2 due to the slopes.
 
 ***Result:*** More reliable drive
 
 - **Scaling**
 
-Images were scaled to 64x64 pixels. This seemed safe to do since the game creates clean, synthetic images with little complexity to begin with.
+***Implementation:*** Images were scaled to 64x64 pixels. This seemed safe to do since the game creates clean, synthetic images with little complexity to begin with.
 
 ***Result:*** Much faster training times
 
