@@ -58,7 +58,7 @@ def telemetry(sid, data):
     #throttle = 0.3
 
     ## CHANGE
-    # smoot out steering angle over time
+    # smooth out steering angle over time
     steering_angle_smooth = (steering_angle + np.sum(prev_steer_array)) / (1+prev_steer_length)
     prev_steer_array[prev_steer_i] = steering_angle_smooth
     prev_steer_i += 1
