@@ -1,4 +1,0 @@
-track1_smooth:
-Track 1 smooth middle-of-lane
-3 laps
-counter-clockwise
