@@ -15,27 +15,48 @@ Data Preprocessing:
 I added a few steps to augment the recorded data (in order):
 
 - **Steering angles close to zero (straight steering) are ignored** according to a given probability
+
 ***Reason:*** Recording of a car going around Track 1 will be skewed towards going straight since much of the track doesn’t require steering input.
+
 ***Implementation:*** Steering angles close to zero are ignored according to a given probability. I arrived at a factor of 0.5 at the end.
+
 ***Result:*** Better lane keeping through curves
+
 - **Flipped data**
+
 ***Reason:*** Recording of a car going around Track 1 will be skewed towards making left turns.
+
 ***Implementation***: All images in the dataset are flipped and the corresponding steering angle is inverted
+
 ***Result:*** More reliable drive (less swerving, less "close calls")
+
 - **Use of stereo images**
+
 ***Reason:*** Just an experiment, but it greatly improved the performance of my model
+
 ***Implementation***: Tried offsets between 0.05 and 0.5. Greater values improved the driving performance of the car. Values below 0.2 didn’t have as much of an impact, while getting closer to 0.5 caused the car’s driving to become very jittery with lots of over-correcting. I settled on 0.25, which was a surprisingly high value.
+
 ***Result:*** More more reliable drive
+
 - **Cropping**
+
 I cropped a little more than the top fifth of the image as well as the bottom to remove the car’s hood from the image. This yielded a generally smoother ride around track 1. I originally cropped one third off the top, but that led to worse performance on Track 2 due to the slopes.
+
 ***Result:*** More reliable drive
+
 - **Scaling**
+
 Images were scaled to 64x64 pixels. This seemed safe to do since the game creates clean, synthetic images with little complexity to begin with.
+
 ***Result:*** Much faster training times
+
 - **Randomize brightness and add artificial shadows**
+
 ***Reason:*** My model would tend to swerve around shaded areas, clearly identifying them as hard road boundaries. It would also start behaving unpredictably when entering and exiting entirely dark areas of Track 2.
+
 ***Implementation:*** Brightness of the entire image is scaled randomly between 0.25 and 1.25.
 Additionally, artificial “shadows” are added simply as a rectangle of darkness that is blended into the original image. Shadows in the game world are fairly simple geometrically, and sticking to an even simpler rectangle shape helped the model enough to be less sensitive to shadows.
+
 ***Result:*** Car drives more predictably through shady areas. After this augmentation, my model started being able to navigate Track 2 in it’s entirety.
 
 Sample images
