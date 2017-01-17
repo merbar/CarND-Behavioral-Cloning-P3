@@ -46,10 +46,10 @@ The following represent sample images used in the model. For better visualizatio
 ![alt tag](sampleImages/flipped.jpg "Flipped Image") Flipped Image
 
 
-![alt tag](sampleImages/brightness.jpg "Reduced Brightness") Reduced Brightness
+![alt tag](sampleImages/brightness.jpg "Reduced Brightness") Left camera with reduced Brightness (center steer angle would be -0.04)
 
 
-![alt tag](sampleImages/shadow.jpg "Added random shadow") Added random shadow
+![alt tag](sampleImages/shadow.jpg "Added random shadow") Center camera with added random shadow
 
 
 ![alt tag](sampleImages/stereoImg_shdw.jpg "Left camera image with added shadow") Left camera image with added shadow
