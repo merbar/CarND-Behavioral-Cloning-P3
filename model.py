@@ -11,6 +11,8 @@ from PIL import ImageOps
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Lambda, ELU
 from keras.layers.convolutional import Convolution2D
+from keras import callbacks
+import tensorflow as tf
 
 IMG_RES = 64
 IMG_X = IMG_RES
@@ -18,8 +20,8 @@ IMG_Y = IMG_RES
 BATCHSIZE = 64
 DATASETS = ['udacity', 'track1_smooth', 'track1_recoverLeft', 'track1_recoverRight']
 EPOCHS = 10
-#MODEL_PATH = 'F:/GitHub/CarND-Behavioral-Cloning-P3/models/'
-MODEL_PATH = 'C:/Users/Marcus/Documents/GitHub/CarND-Behavioral-Cloning-P3/models/'
+MODEL_PATH = 'F:/GitHub/CarND-Behavioral-Cloning-P3/models/'
+#MODEL_PATH = 'C:/Users/Marcus/Documents/GitHub/CarND-Behavioral-Cloning-P3/models/'
 DEBUG = False
 
 def readCSV(dataSet, keep=1.0, keepStraight=0.5, useStereo=False, flip=False):
@@ -183,26 +185,39 @@ def nVidia(ch, row, col):
 
 def commaAI(ch, row, col):
     #ch, row, col = 3, 160, 320  # original model format
-    model = Sequential()
-    model.add(Lambda(lambda x: x/127.5 - 1.,
-              input_shape=(row, col, ch),
-              output_shape=(row, col, ch)))
-    #model.add(Convolution2D(16, 8, 8, subsample=(4, 4), border_mode="same"))
-    model.add(Convolution2D(16, 5, 5, subsample=(4, 4), border_mode="same"))
-    model.add(ELU())
-    #model.add(Convolution2D(32, 5, 5, subsample=(2, 2), border_mode="same"))
-    model.add(Convolution2D(32, 3, 3, subsample=(2, 2), border_mode="same"))
-    model.add(ELU())
-    model.add(Convolution2D(64, 5, 5, subsample=(2, 2), border_mode="same"))
-    model.add(Flatten())
-    model.add(Dropout(.2))
-    model.add(ELU())
-    model.add(Dense(512))
-    model.add(Dropout(.5))
-    model.add(ELU())
-    model.add(Dense(1))
-
-    model.compile(optimizer="adam", loss="mse")
+    with tf.name_scope('model'):
+        model = Sequential()
+        with tf.name_scope('normalize'):
+            model.add(Lambda(lambda x: x/127.5 - 1.,
+                      input_shape=(row, col, ch),
+                      output_shape=(row, col, ch)))
+        with tf.name_scope('conv2D_1'):
+            #model.add(Convolution2D(16, 8, 8, subsample=(4, 4), border_mode="same"))
+            model.add(Convolution2D(16, 5, 5, subsample=(4, 4), border_mode="same"))
+        with tf.name_scope('ELU_1'):
+            model.add(ELU())
+        with tf.name_scope('conv2D_2'):
+            #model.add(Convolution2D(32, 5, 5, subsample=(2, 2), border_mode="same"))
+            model.add(Convolution2D(32, 3, 3, subsample=(2, 2), border_mode="same"))
+        with tf.name_scope('ELU_2'):
+            model.add(ELU())
+        with tf.name_scope('conv2D_3'):
+            model.add(Convolution2D(64, 5, 5, subsample=(2, 2), border_mode="same"))
+            model.add(Flatten())
+        with tf.name_scope('dropout_1'):
+            model.add(Dropout(.2))
+        with tf.name_scope('ELU_3'):
+            model.add(ELU())
+        with tf.name_scope('dense_1'):
+            model.add(Dense(512))
+        with tf.name_scope('dropout_2'):
+            model.add(Dropout(.5))
+        with tf.name_scope('elu_4'):
+            model.add(ELU())
+        with tf.name_scope('dense_2'):
+            model.add(Dense(1))
+        with tf.name_scope('learning'):
+            model.compile(optimizer="adam", loss="mse")
     return model
 
 def dummyModel(ch, row, col):
@@ -227,24 +242,24 @@ def main():
     for dataset in DATASETS:
         trainData.extend(readCSV(dataset, useStereo=True, flip=True, keepStraight=0.5, keep = 1.0))
     print("total samples: %s" % len(trainData))
-    
-    for i in range(2):
-        print("building model...")
-        #model = nVidia(3, IMG_Y, IMG_X)
-        model = commaAI(3, IMG_Y, IMG_X)
 
-        print("starting training...")
-        generator = generateBatchRandom(trainData)
+    print("building model...")
+    #model = nVidia(3, IMG_Y, IMG_X)
+    model = commaAI(3, IMG_Y, IMG_X)
+    cbks = [callbacks.TensorBoard(log_dir='tb_log/')]
 
-        model.fit_generator(generator, samples_per_epoch=20000, nb_epoch=EPOCHS)
+    print("starting training...")
+    generator = generateBatchRandom(trainData)
+    with tf.name_scope('train'):
+        model.fit_generator(generator, callbacks=cbks, samples_per_epoch=20000, nb_epoch=EPOCHS)
 
-        print("saving model...")
-        modelName = 'commaAI_bigData_20k_%se_%s' % (EPOCHS, i)
-        fileName = '%s%s' % (MODEL_PATH, modelName)
-        json_string = model.to_json()
-        with open('%s.json' % fileName, "w") as json_file:
-            json_file.write(json_string)
-        model.save_weights('%s.h5' % fileName)
+    print("saving model...")
+    modelName = 'commaAI_bigData_20k_%se' % EPOCHS
+    fileName = '%s%s' % (MODEL_PATH, modelName)
+    json_string = model.to_json()
+    with open('%s.json' % fileName, "w") as json_file:
+        json_file.write(json_string)
+    model.save_weights('%s.h5' % fileName)
 
 if __name__ == '__main__':
     main()

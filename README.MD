@@ -1,6 +1,12 @@
 Udacity Self-Driving Car Engineer: Project 3 - Behavioral Cloning
 ===================
 
+Result
+---
+My model finishes both tracks without going off:
+[TRACK 1](https://www.youtube.com/watch?v=3ecda8SnOGI)
+[TRACK 2](https://www.youtube.com/watch?v=cuyR9sAv-80)
+
 Approach
 ---
 In order to establish ground truth, I started out with only the Udacity data, wanting to get the car drive around the track at least once with the published baseline data. Once I achieved that, I added my own data and gradually introduced more preprocessing steps as outlined below in order to improve two things:
@@ -109,6 +115,9 @@ I got better, more reliable training results from approach 2. It made even more 
 Since validation data did not seem like a reasonable measure of the  performance of the model, I simply ran many wedges of different settings and tested on the track itself.
 
 In the end, my most succesfuly model trained for 10 epochs on 20.000 samples per epoch with a batch size of 64.
+
+
+![alt tag](sampleImages/model.jpg "Model diagram")
 
 Drive.py changes
 ---
