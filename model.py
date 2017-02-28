@@ -12,12 +12,15 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Lambda, ELU
 from keras.layers.convolutional import Convolution2D
 from keras import callbacks
+from keras.regularizers import l2, activity_l2
 import tensorflow as tf
+
+
 
 IMG_RES = 64
 IMG_X = IMG_RES
 IMG_Y = IMG_RES
-BATCHSIZE = 64
+BATCHSIZE = 128
 DATASETS = ['udacity', 'track1_smooth', 'track1_recoverLeft', 'track1_recoverRight']
 EPOCHS = 10
 MODEL_PATH = 'F:/GitHub/CarND-Behavioral-Cloning-P3/models/'
@@ -53,12 +56,12 @@ def readCSV(dataSet, keep=1.0, keepStraight=0.5, useStereo=False, flip=False):
                     data.append({'img': line['right'], 'steer':line['steer']-stereoSteerOffset, 'flip': False})
                     if flip:
                         data.append({'img': line['left'], 'steer':(line['steer']+stereoSteerOffset)*-1,'flip': True})
-                        data.append({'img': line['right'], 'steer':(line['steer']-stereoSteerOffset)*-1 ,'flip': True})
+                        data.append({'img': line['right'], 'steer':(line['steer']-stereoSteerOffset)*-1 ,'flip': True})z
     return data
 
 
 def addShadow(img):
-    brightness = 0.5
+    brightness = 0.25
     height, width = img.shape[:2]
     shdwWidth = 20+width*np.random.uniform()
     shdwHeight = 20+height*np.random.uniform()
@@ -254,7 +257,7 @@ def main():
         model.fit_generator(generator, callbacks=cbks, samples_per_epoch=20000, nb_epoch=EPOCHS)
 
     print("saving model...")
-    modelName = 'commaAI_bigData_20k_%se' % EPOCHS
+    modelName = 'commaAI_l2_20k_%se' % EPOCHS
     fileName = '%s%s' % (MODEL_PATH, modelName)
     json_string = model.to_json()
     with open('%s.json' % fileName, "w") as json_file:

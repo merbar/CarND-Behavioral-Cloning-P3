@@ -1,6 +1,8 @@
 Udacity Self-Driving Car Engineer: Project 3 - Behavioral Cloning
 ===================
 
+**The goal is to teach a Convolutional Neural Network (CNN) to drive a car in a simulator that runs in Unity** 
+
 Result
 ---
 My model finishes both tracks without going off:
@@ -9,7 +11,7 @@ My model finishes both tracks without going off:
 
 Approach
 ---
-In order to establish ground truth, I started out with only the Udacity data, wanting to get the car drive around the track at least once with the published baseline data. Once I achieved that, I added my own data and gradually introduced more preprocessing steps as outlined below in order to improve two things:
+In order to establish ground truth, I started out with only the Udacity data, trying to get the car drive around the track at least once with the published baseline data. Once I achieved that, I added my own data and gradually introduced more preprocessing steps as outlined below in order to improve two things:
 
 - Smoothness of the drive
 - Prevent overfitting, defined by good performance on Track 2
