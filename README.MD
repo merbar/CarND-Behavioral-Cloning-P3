@@ -5,8 +5,8 @@ Udacity Self-Driving Car Engineer: Project 3 - Behavioral Cloning
 
 The simulator sends an image from a forward-facing camera at 10hz.
 
-Two tracks were provided, with the second track being an "above-and-beyond" challenge. 
-While optional, I opted to run the simulator with higher grahics settings that included shadows to further increase the challenge.  
+Two tracks were provided. Track 1 is the what the model is trained on with the second track being an "above-and-beyond" challenge to test how well the model generalizes.  
+While optional, I chose to run the simulator with higher grahics settings that included shadows to further increase the challenge.  
 
 This is part of a series of projects exploring different methods to autonomously drive a car around the given track. Others are:
 * [MPC Control](https://github.com/merbar/CarND-MPC-Project)
